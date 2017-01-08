@@ -63,7 +63,7 @@
 /******/ 	}
 /******/
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "5a5e8a5a7827692274af"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "ea1eb6729cf2a23d85d0"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/
@@ -5374,50 +5374,109 @@
 	function App(_ref) {
 	    var children = _ref.children;
 	
-	    return createVNode(2, 'div', null, [createVNode(2, 'h1', null, 'Password Checker'), createVNode(2, 'p', null, 'Enter your username and password to check if it\'s correct.'), children]);
+	    return createVNode(2, 'div', null, [createVNode(2, 'h1', null, 'Password Generator'), createVNode(2, 'p', null, 'Send us a username and we\'ll create a secure password for you!'), children]);
 	}
 
 /***/ },
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.FormComponent = FormComponent;
+	exports.FormComponent = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _inferno = __webpack_require__(1);
 	
 	var _inferno2 = _interopRequireDefault(_inferno);
 	
+	var _infernoComponent = __webpack_require__(9);
+	
+	var _infernoComponent2 = _interopRequireDefault(_infernoComponent);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
 	var createVNode = _inferno2.default.createVNode;
-	function FormComponent() {
-	  return createVNode(2, "fieldset", null, [createVNode(2, "div", {
-	    "className": "field"
-	  }, [createVNode(2, "label", {
-	    "htmlFor": "username"
-	  }, "Enter Your Username"), createVNode(512, "input", {
-	    "id": "username",
-	    "type": "text",
-	    "name": "username"
-	  })]), createVNode(2, "div", {
-	    "className": "field"
-	  }, [createVNode(2, "label", {
-	    "htmlFor": "password"
-	  }, "Enter Your Password"), createVNode(512, "input", {
-	    "id": "password",
-	    "type": "text",
-	    "name": "password"
-	  })]), createVNode(2, "div", {
-	    "className": "field"
-	  }, createVNode(2, "button", {
-	    "type": "button"
-	  }, "Check"))]);
-	}
+	
+	var FormComponent = exports.FormComponent = function (_Component) {
+	  _inherits(FormComponent, _Component);
+	
+	  function FormComponent() {
+	    _classCallCheck(this, FormComponent);
+	
+	    var _this = _possibleConstructorReturn(this, (FormComponent.__proto__ || Object.getPrototypeOf(FormComponent)).call(this));
+	
+	    _this.state = {
+	      username: null,
+	      errors: null
+	    };
+	    _this.updateUsername = _this.updateUsername.bind(_this);
+	    _this.submit = _this.submit.bind(_this);
+	    return _this;
+	  }
+	
+	  _createClass(FormComponent, [{
+	    key: 'updateUsername',
+	    value: function updateUsername(event) {
+	      this.setState({ username: event.target.value });
+	    }
+	  }, {
+	    key: 'submit',
+	    value: function submit(event) {
+	      var _this2 = this;
+	
+	      event.preventDefault();
+	      // handle form submission
+	      var req = new Request("/api/check", { method: "POST", body: '{"username": "' + this.state.username + '", "timestamp": "' + Date.now().toString() + '"}' });
+	      fetch(req).then(function (res) {
+	        return res.json();
+	      }).then(function (res) {
+	        var result = res.password ? 'Your new password is: ' + res.password : "Sorry! You don't get a password";
+	        _this2.setState({ result: result });
+	      }).catch(function (err) {
+	        var errors = err instanceof SyntaxError ? "Server found a broken" : err.toString();
+	        _this2.setState({ errors: errors });
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return createVNode(2, 'div', null, [createVNode(2, 'h2', null, this.state.result), createVNode(2, 'form', {
+	        'action': '#'
+	      }, [createVNode(2, 'div', {
+	        'className': 'field'
+	      }, [createVNode(2, 'label', {
+	        'htmlFor': 'username'
+	      }, 'Enter Your Username'), createVNode(512, 'input', {
+	        'id': 'username',
+	        'type': 'text',
+	        'name': 'username'
+	      }, null, {
+	        'onChange': this.updateUsername
+	      })]), createVNode(2, 'div', {
+	        'className': 'field'
+	      }, createVNode(2, 'button', {
+	        'type': 'submit'
+	      }, 'Get Password'))], {
+	        'onSubmit': this.submit
+	      }), createVNode(2, 'div', {
+	        'className': 'error'
+	      }, this.state.errors)]);
+	    }
+	  }]);
+
+	  return FormComponent;
+	}(_infernoComponent2.default);
 
 /***/ },
 /* 23 */
